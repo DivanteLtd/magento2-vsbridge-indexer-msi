@@ -5,6 +5,7 @@
     </type>
 
     <preference for="Divante\VsbridgeIndexerMsi\Api\GetStockIdBySalesChannelCodeInterface" type="Divante\VsbridgeIndexerMsi\Model\GetStockIdBySalesChannelCode"/>
+    <preference for="Divante\VsbridgeIndexerMsi\Api\GetStockIdByStoreIdInterface" type="Divante\VsbridgeIndexerMsi\Model\GetStockIdByStoreId"/>
     <preference for="Divante\VsbridgeIndexerCatalog\Api\LoadInventoryInterface" type="Divante\VsbridgeIndexerMsi\Model\LoadInventory"/>
 
     <type name="Divante\VsbridgeIndexerCatalog\Model\Indexer\DataProvider\Product\ConfigurableData">
