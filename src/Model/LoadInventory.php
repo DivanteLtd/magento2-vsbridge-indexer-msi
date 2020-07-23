@@ -13,8 +13,10 @@ namespace Divante\VsbridgeIndexerMsi\Model;
 use Divante\VsbridgeIndexerCatalog\Api\LoadInventoryInterface;
 use Divante\VsbridgeIndexerMsi\Api\GetStockIdByStoreIdInterface;
 use Divante\VsbridgeIndexerMsi\Model\ResourceModel\Product\Inventory as InventoryResource;
+use Magento\InventoryConfigurationApi\Api\GetStockItemConfigurationInterface;
 use Magento\InventoryConfigurationApi\Model\IsSourceItemManagementAllowedForSkuInterface;
-use Magento\InventorySalesApi\Api\GetProductSalableQtyInterface;
+use Magento\InventoryReservationsApi\Model\GetReservationsQuantityInterface;
+use Magento\InventorySalesApi\Model\GetStockItemDataInterface;
 
 /**
  * Class LoadInventory
@@ -32,9 +34,14 @@ class LoadInventory implements LoadInventoryInterface
     private $getStockIdByStoreId;
 
     /**
-     * @var GetProductSalableQtyInterface
+     * @var GetStockItemConfigurationInterface
      */
-    private $getProductSalableQty;
+    private $getStockItemConfiguration;
+
+    /**
+     * @var GetReservationsQuantityInterface
+     */
+    private $getReservationsQuantity;
 
     /**
      * @var IsSourceItemManagementAllowedForSkuInterface
@@ -46,18 +53,21 @@ class LoadInventory implements LoadInventoryInterface
      *
      * @param InventoryResource $resource
      * @param GetStockIdByStoreIdInterface $getStockIdByStoreId
-     * @param GetProductSalableQtyInterface $getProductSalableQty
+     * @param GetStockItemConfigurationInterface $getStockItemConfig
+     * @param GetReservationsQuantityInterface $getReservationsQuantity
      * @param IsSourceItemManagementAllowedForSkuInterface $isSourceItemManagementAllowedForSku
      */
     public function __construct(
         InventoryResource $resource,
         GetStockIdByStoreIdInterface $getStockIdByStoreId,
-        GetProductSalableQtyInterface $getProductSalableQty,
+        GetStockItemConfigurationInterface $getStockItemConfig,
+        GetReservationsQuantityInterface $getReservationsQuantity,
         IsSourceItemManagementAllowedForSkuInterface $isSourceItemManagementAllowedForSku
     ) {
         $this->resource = $resource;
         $this->getStockIdByStoreId = $getStockIdByStoreId;
-        $this->getProductSalableQty = $getProductSalableQty;
+        $this->getStockItemConfiguration = $getStockItemConfig;
+        $this->getReservationsQuantity = $getReservationsQuantity;
         $this->isSourceItemManagementAllowedForSku = $isSourceItemManagementAllowedForSku;
     }
 
@@ -73,7 +83,7 @@ class LoadInventory implements LoadInventoryInterface
 
         foreach ($rawInventory as $sku => $productInventory) {
             $productInventory['salable_qty'] = $this->isSourceItemManagementAllowedForSku->execute($sku)
-                ? $this->getProductSalableQty->execute($sku, $stockId)
+                ? $this->getSalableQty($sku, $stockId, (int)$productInventory['qty'])
                 : (int)$productInventory['qty']; // default to qty value if source management not allowed
             $productId = $productIdBySku[$sku];
             $productInventory['product_id'] = $productId;
@@ -99,5 +109,25 @@ class LoadInventory implements LoadInventoryInterface
         }
 
         return $idBySku;
+    }
+
+    /**
+     * Get Salable Quantity for given SKU and Stock
+     *
+     * @param string $sku
+     * @param int $stockId
+     * @param int $qty
+     *
+     * @return float
+     */
+    private function getSalableQty(string $sku, int $stockId, int $qty): float
+    {
+        $stockItemConfig = $this->getStockItemConfiguration->execute($sku, $stockId);
+        $minQty = $stockItemConfig->getMinQty();
+        $productQtyInStock = $qty
+            + $this->getReservationsQuantity->execute($sku, $stockId)
+            - $minQty;
+
+        return $productQtyInStock;
     }
 }
