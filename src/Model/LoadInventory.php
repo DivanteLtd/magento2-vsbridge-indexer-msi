@@ -15,7 +15,7 @@ use Divante\VsbridgeIndexerMsi\Api\GetStockIdByStoreIdInterface;
 use Divante\VsbridgeIndexerMsi\Model\ResourceModel\Product\Inventory as InventoryResource;
 use Magento\InventoryConfigurationApi\Api\GetStockItemConfigurationInterface;
 use Magento\InventoryConfigurationApi\Model\IsSourceItemManagementAllowedForSkuInterface;
-use Magento\InventoryReservationsApi\Model\GetReservationsQuantityInterface;
+use Magento\InventoryReservations\Model\ResourceModel\GetReservationsQuantity;
 use Magento\InventorySalesApi\Model\GetStockItemDataInterface;
 
 /**
@@ -39,7 +39,7 @@ class LoadInventory implements LoadInventoryInterface
     private $getStockItemConfiguration;
 
     /**
-     * @var GetReservationsQuantityInterface
+     * @var GetReservationsQuantity
      */
     private $getReservationsQuantity;
 
@@ -54,14 +54,14 @@ class LoadInventory implements LoadInventoryInterface
      * @param InventoryResource $resource
      * @param GetStockIdByStoreIdInterface $getStockIdByStoreId
      * @param GetStockItemConfigurationInterface $getStockItemConfig
-     * @param GetReservationsQuantityInterface $getReservationsQuantity
+     * @param GetReservationsQuantity $getReservationsQuantity
      * @param IsSourceItemManagementAllowedForSkuInterface $isSourceItemManagementAllowedForSku
      */
     public function __construct(
         InventoryResource $resource,
         GetStockIdByStoreIdInterface $getStockIdByStoreId,
         GetStockItemConfigurationInterface $getStockItemConfig,
-        GetReservationsQuantityInterface $getReservationsQuantity,
+        GetReservationsQuantity $getReservationsQuantity,
         IsSourceItemManagementAllowedForSkuInterface $isSourceItemManagementAllowedForSku
     ) {
         $this->resource = $resource;

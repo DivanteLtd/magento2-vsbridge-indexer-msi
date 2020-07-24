@@ -3,6 +3,9 @@
     <type name="Magento\InventoryCatalog\Model\SourceItemsSaveSynchronization\SetDataToLegacyCatalogInventory">
         <plugin name="updateProductsInEs" type="Divante\VsbridgeIndexerMsi\Plugin\InventoryCatalog\SetDataToLegacyCatalogInventoryPlugin"/>
     </type>
+    <type name="Magento\InventorySalesApi\Api\PlaceReservationsForSalesEventInterface">
+        <plugin name="updateProductsInEs" type="Divante\VsbridgeIndexerMsi\Plugin\Api\PlaceReservationsForSalesEventPlugin"/>
+    </type>
 
     <preference for="Divante\VsbridgeIndexerMsi\Api\GetStockIdBySalesChannelCodeInterface" type="Divante\VsbridgeIndexerMsi\Model\GetStockIdBySalesChannelCode"/>
     <preference for="Divante\VsbridgeIndexerMsi\Api\GetStockIdByStoreIdInterface" type="Divante\VsbridgeIndexerMsi\Model\GetStockIdByStoreId"/>
